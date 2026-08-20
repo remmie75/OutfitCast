@@ -1,0 +1,7 @@
+{
+  "name": "OutfitCast",
+  "description": "Weather forecast app that gives hilarious clothing advice instead of boring weather numbers.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
