@@ -23,15 +23,34 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
 
-      - name: Show Android SDK
+      - name: Configure Android SDK
         run: |
           echo "ANDROID_HOME=$ANDROID_HOME"
           echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
-          sdkmanager --version
 
-      - name: Accept Android SDK licenses
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+
+          if [ ! -f "$SDKMANAGER" ]; then
+            echo "sdkmanager not found at:"
+            echo "$SDKMANAGER"
+            find "$ANDROID_HOME/cmdline-tools" -maxdepth 3 -type f -name sdkmanager 2>/dev/null || true
+            exit 1
+          fi
+
+          echo "sdkmanager found:"
+          "$SDKMANAGER" --version
+
+          echo "Accepting Android SDK licenses..."
+          yes | "$SDKMANAGER" --licenses || true
+
+      - name: Install Android SDK
         run: |
-          yes | sdkmanager --licenses || true
+          SDKMANAGER="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+
+          "$SDKMANAGER" \
+            "platform-tools" \
+            "platforms;android-35" \
+            "build-tools;35.0.0"
 
       - name: Build Debug APK
         run: gradle assembleDebug --stacktrace
